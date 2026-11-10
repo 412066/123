@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王圓媗的學習歷程網站</title>
+    <style>
+        @import url('https://googleapis.com');
+        
+        /* 全螢幕動態背景：從洞窟看出去的世界（有山有水） */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #ffffff;
+            background: url('https://giphy.com') no-repeat center center fixed;
+            background-size: cover;
+            overflow-x: hidden;
+        }
+
+        /* 半透明黑紗：維持洞窟感，確保看得到字 */
+        .overlay-bg {
+            background: rgba(0, 0, 0, 0.45);
+            min-height: 100vh;
+            width: 100%;
+            padding-bottom: 60px;
+            box-sizing: border-box;
+        }
+
+        /* 頂部草地 Banner */
+        header {
+            background: linear-gradient(to bottom, rgba(76, 175, 80, 0.95) 80%, rgba(56, 142, 60, 0.95) 100%);
+            border-bottom: 6px solid #5d4037;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        .pixel-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.2rem;
+            color: #ffff55;
+            text-shadow: 4px 4px 0px #3f3f3f;
+            margin: 0 0 12px 0;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 0px #000000;
+            margin: 0;
+        }
+
+        /* 🚀 穩定的方塊網格排版，絕不亂掉，確保 Miso 完美呈現 🚀 */
+        .minecraft-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            width: 92%;
+            max-width: 1200px;
+            margin: 40px auto 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* 卡片通用設定 */
+        .pin-card {
+            background-color: rgba(74, 59, 44, 0.93); 
+            backdrop-filter: blur(5px);
+            border: 5px solid #2e2216;
+            box-shadow: 6px 6px 18px rgba(0,0,0,0.65);
+            padding: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pin-card:hover {
+            transform: translateY(-10px) scale(1.03);
+        }
+
+        /* 照片外框與固定高度，防破圖防亂跳 */
+        .photo-wrapper {
+            width: 100%;
+            height: 220px;
+            background-color: #22170e;
+            border: 3px solid #1a1108;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 確保照片完美填滿不歪斜 */
+        }
+
+        .pin-card h3 {
+            margin: 15px 0 8px 0;
+            font-size: 1.35rem;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .pin-card p {
+            margin: 0;
+            font-size: 0.98rem;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        /* ==========================================================================
+           🎯 完全正確的成員官方代表色及懸停發光特效
+           ========================================================================== */
+        
+        /* 1. 阿斯 - 綠色 (Green) */
+        .card-asu { border-color: #00c851; }
+        .card-asu:hover { border-color: #2bbbad; box-shadow: 0 0 25px #00c851; }
+        
+        /* 2. 紅月 - 紅色 (Red) */
+        .card-yue { border-color: #ff4444; }
+        .card-yue:hover { border-color: #ff6666; box-shadow: 0 0 25px #ff4444; }
+        
+        /* 3. 偏頭 - 藍色 (Blue) */
+        .card-fauzh { border-color: #00ddff; }
+        .card-fauzh:hover { border-color: #33b5e5; box-shadow: 0 0 25px #00ddff; }
+        
+        /* 4. Miso - 黃橘色 (Orange/Yellow) */
+        .card-miso { border-color: #ffaa00; }
+        .card-miso:hover { border-color: #ffcc00; box-shadow: 0 0 25px #ffaa00; }
+        
+        /* 5. 王圓媗 / 成果卡片 - 終界紫 */
+        .card-me { border-color: #aa66cc; }
+        .card-me:hover { border-color: #ff88cc; box-shadow: 0 0 25px #aa66cc; }
+
+        /* ==========================================================================
+           麥塊風格彈窗 (Modal)
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: #2e2216;
+            border: 6px solid #4a3b2c;
+            box-shadow: inset -4px -4px 0px #1a1108, inset 4px 4px 0px #63503c, 0 12px 35px rgba(0,0,0,0.9);
+            width: 90%;
+            max-width: 520px;
+            padding: 30px 25px;
+            border-radius: 6px;
+            text-align: center;
+            position: relative;
+            transform: scale(0.75);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px; right: 18px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            color: #ff4444;
+            font-size: 1.4rem;
+            user-select: none;
+        }
+
+        .modal-close:hover { color: #ff6666; }
+
+        .btn-minecraft {
+            display: inline-block;
+            background-color: #9e9e9e;
+            color: #ffffff;
+            border: 4px solid #000000;
+            box-shadow: inset -4px -4px 0px #616161, inset 4px 4px 0px #e0e0e0;
+            padding: 12px 24px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 25px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        
+        .btn-minecraft:hover {
+            background-color: #4caf50;
+            box-shadow: inset -4px -4px 0px #1b5e20, inset 4px 4px 0px #81c784;
+            color: #ffff55;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 20px 20px 20px;
+            color: #a1887f;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay-bg">
+    <header>
+        <div class="pixel-title">WANG, YUAN-XUAN</div>
+        <div class="subtitle">王圓媗的個人學習歷程 ✕ 方塊boy空間</div>
+    </header>
+
+    <!-- 網格排版區 -->
+    <div class="minecraft-grid">
+        
+        <!-- 關於我 -->
+        <div class="pin-card card-me" onclick="openModal('me')">
+            <div class="photo-wrapper">
+                <img src="https://imgur.com" alt="麥塊一格空島生存">
+            </div>
+            <h3 style="color: #ff88cc;">👤 空間主人：王圓媗</h3>
+            <p>歡迎光臨！這是我融合生活興趣與前端網頁設計技術的成果展現。透過從麥塊洞窟向外眺望的視角，象徵打破框架，點擊看更多介紹！</p>
+        </div>
+
+        <!-- 阿斯 (綠色) -->
+        <div class="pin-card card-asu" onclick="openModal('asu')">
+            <div class="photo-wrapper">
+                <img src="https://imgur.com" alt="阿斯">
+            </div>
+            <h3 style="color: #00c851;">👑 團長：阿斯</h3>
+            <p>代表色：綠色 💚<br>方塊boy 的核心企劃大腦兼主揪人！點擊卡片看專屬能力拆解與頻道傳送門。</p>
+        </div>
+
+        <!-- 紅月 (紅色) -->
+        <div class="pin-card card-yue" onclick="openModal('yue')">
+            <div class="photo-wrapper">
+                <img src="https://imgur.com" alt="紅月">
+            </div>
+            <h3 style="color: #ff4444;">🌙 核心：紅月</h3>
+            <p>代表色：紅色 ❤️<br>精通各種迷因與網絡笑梗，是影片中最強大的笑點締造者！點擊看詳細介紹。</p>
+        </div>
+
+        <!-- 成果展示 -->
+        <div class="pin-card card-me" onclick="openModal('portfolio')">
+            <div class="photo-wrapper">
+                <img src="https://imgur.com" alt="一格空島大挑戰">
+            </div>
+            <h3 style="color: #ff88cc;">📦 資訊學科多元成果</h3>
+            <p>本專案完美呈現了響應式網格切版、JavaScript 彈窗互動控制與多元學習檔案的結合。點擊觀看詳細分析報告。</p>
+        </div>
+
+        <!-- 偏頭 (藍色) -->
+        <div class="pin-card card-fauzh" onclick="openModal('fauzh')">
+            <div class="photo-wrapper">
+                <img src="https://imgur.com" alt="偏頭">
+            </div>
+            <h3 style="color: #00ddff;">⚡ 達人：偏頭</h3>
+            <p>代表色：藍色 💙<br>實力極為強悍的極限速通高手，精通麥塊底層機制！點擊看專屬能力拆解與頻道連結。</p>
+        </div>
+
+        <!-- Miso (黃橘色) - 絕對不會再不見了！ -->
+        <div class="pin-card card-miso" onclick="openModal('miso')">
+            <div class="photo-wrapper">
+                <img src="https://imgur.com" alt="Miso">
+            </div>
+            <h3 style="color: #ffaa00;">🍄 靈魂：Miso</h3>
+            <p>代表色：黃色/橘色 💛🧡<br>嗓音磁性、幽默爆表的模組研發與冷面吐槽達人！點擊看專屬詳細介紹。</p>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 王圓媗 個人學習歷程研發空間 | 基於 Minecraft 幾何美學開發</p>
+    </footer>
+</div>
+
+<!-- 彈窗結構 -->
+<div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="modal-close" onclick="closeModal(null)">X</span>
